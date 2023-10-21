@@ -4,6 +4,7 @@ from app import app, camera
 
 recording = True
 
+
 # Fonction pour capturer la vidéo en temps réel
 def generate_frames():
     while recording:  # Continuer à capturer et diffuser tant que l'enregistrement est activé
@@ -45,7 +46,13 @@ def stop_recording():
     if request.cookies.get('utilisateur_camera') != "drissa":
         return redirect(url_for('login'))
     recording = False
-    return render_template("stopped.html")
+    return render_template("stopped.html", recording=recording)
+
+@app.route('/pre_stop_recording', methods=['GET'])
+def pre_stop_recording():
+    global recording
+    recording = True
+    return redirect(url_for('home'))
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
@@ -63,6 +70,8 @@ def home():
         else:
             return redirect(url_for('home'))
     if utilisateur:
+        if not recording:
+            return render_template('stopped.html', utilisateur=utilisateur)
         return render_template('video.html', utilisateur=utilisateur)
     return redirect(url_for('login'))
 
