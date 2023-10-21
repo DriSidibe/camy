@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video surveillance magasin</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <a href="{{ url_for('logout') }}"><button>se deconnecter</button></a>
+    <h1>Mon Flux Vidéo Personnalisé</h1>
+    <img src="{{ url_for('video') }}" alt="Flux Vidéo 1">
+    {% if utilisateur == "drissa" %}
+        <a href="{{ url_for('stop_recording') }}"><button>Arrêter l'enregistrement</button></a>
+    {% endif %}
+    <p>Ceci est une page personnalisée avec un flux vidéo.</p>
+</body>
+</html>

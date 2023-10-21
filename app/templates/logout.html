@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page de Connexion</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+    <div class="form-container">
+        <h1 class="form-title">Deconnecté avec succès</h1>
+        <p>Vous serez redirigé vers une autre page dans quelques secondes...</p>
+    </div>
+    <script>
+        // Utilisez setTimeout pour ajouter un délai (en millisecondes) avant la redirection
+        setTimeout(function() {
+            window.location.href = '/login'; // Remplacez '/nouvelle_page' par l'URL de redirection souhaitée
+        }, 3000); // 5000 millisecondes équivalent à 5 secondes
+    </script>
+</body>
+</html>

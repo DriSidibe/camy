@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page de Connexion</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+    <div class="form-container">
+        <h1 class="form-title">Connexion</h1>
+        <form method="post" action="/" onsubmit="return validateForm();">
+            <input class="form-input" type="text" name="username" id="username" placeholder="Nom d'utilisateur"><br>
+            <input class="form-input" type="password" name="password" id="password" placeholder="Mot de passe"><br>
+            <button class="form-submit" type="submit">Se connecter</button>
+        </form>
+        <a class="form-link" href="/mot_de_passe_oublie">Mot de passe oublié ?</a>
+        <a class="logout-link" href="/logout">Se déconnecter</a>
+    </div>
+
+    <script>
+        function validateForm() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            if (username !== "drissa" && password !== "ancien123") {
+                alert("Veuillez saisir un nom d'utilisateur et un mot de passe.");
+                return false; // Empêche la soumission du formulaire
+            }
+            return true; // Autorise la soumission du formulaire si les champs sont remplis
+        }
+    </script>
+</body>
+</html>
