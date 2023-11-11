@@ -9,8 +9,52 @@
     <h1>Mon Flux Vidéo Personnalisé</h1>
     <img src="{{ url_for('video') }}" alt="Flux Vidéo 1">
     {% if utilisateur == "drissa" %}
-        <a href="{{ url_for('stop_recording') }}"><button>Arrêter l'enregistrement</button></a>
+        <a onclick="showStopRecordingBox()"><button>Arrêter l'enregistrement</button></a>
     {% endif %}
     <p>Ceci est une page personnalisée avec un flux vidéo.</p>
+    <div id="stop-prompt-sure-box-cnt">
+        <div id="stop-prompt-sure-box">
+            <p>Êtes-vous sûr de vouloir arrêter l'enregistrement ?</p>
+            <a href="{{ url_for('stop_recording') }}"><button>Oui</button></a>
+            <a onclick="closeStopRecording()"><button>Non</button></a>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function closeStopRecording() {
+            document.getElementById("stop-prompt-sure-box-cnt").style.display = "none";
+        }
+
+        function showStopRecordingBox() {
+            document.getElementById("stop-prompt-sure-box-cnt").style.display = "block";
+        }
+    </script>
+
+    <style>
+        #stop-prompt-sure-box-cnt {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            display: none;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding-top: 200px;
+            z-index: 10;
+        }
+
+        #stop-prompt-sure-box {
+            width: 300px;
+            height: 200px;
+            background-color: white;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+        }
+    </style>
 </body>
 </html>

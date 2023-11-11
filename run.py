@@ -36,6 +36,7 @@ def generate_frames():
             break
         else:
             #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            frame = cv2.flip(frame, 1)
             frame = cv2.putText(frame ,str(datetime.now()), (0, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 1, cv2.LINE_4)
             
             # Write the frame into the
@@ -82,17 +83,19 @@ def stop_recording():
     if request.cookies.get('utilisateur_camera') != "drissa":
         return redirect(url_for('login'))
     recording = False
+    camera.release()
     return render_template("stopped.html", recording=recording)
 
 @app.route('/pre_stop_recording', methods=['GET'])
 def pre_stop_recording():
-    global recording
+    global recording, camera
     recording = True
+    camera = cv2.VideoCapture(0)
     return redirect(url_for('home'))
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
-    global recording
+    global recording, camera
     utilisateur = request.cookies.get('utilisateur_camera')
     if request.method == 'POST':
         if request.form.get('username') == "drissa" and request.form.get('password') == "ancien123":
@@ -105,6 +108,8 @@ def home():
             return resp
         else:
             return redirect(url_for('home'))
+    if not recording:
+        camera = cv2.VideoCapture(0)
     if request.args.get("user") == "computer":
         return render_template('video.html', utilisateur="drissa")
     if utilisateur:
@@ -114,4 +119,4 @@ def home():
     return redirect(url_for('login'))
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")
