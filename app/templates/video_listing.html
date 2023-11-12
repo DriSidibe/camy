@@ -3,7 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Video List</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <title>Video enregistrées</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -34,25 +39,88 @@
       }
 
       img {
-        max-width: 100%;
+        max-width: 320px;
+        max-height: 240px;
         height: auto;
         margin-top: 10px;
+      }
+
+      #video {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+        justify-content: center;
+      }
+
+      #video_ctn {
+        border-radius: 5px;
+        border: 1px solid #333;
+        padding: 10px;
+        width: 600px;
+        height: 400px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #333;
+      }
+
+      img {
+        cursor: pointer;
+      }
+
+      #video_frame {
+        cursor: default;
+      }
+
+      #head {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
       }
     </style>
   </head>
   <body>
+    <div id="head">
+      <a href="{{ url_for('logout') }}"><button>se deconnecter</button></a>
+      <a href="{{ url_for('home') }}"><button>Home</button></a>
+    </div>
     <h1>Video List</h1>
+    <div id="video">
+      <h2>{{ video }}</h2>
+      <div id="video_ctn">
+        {% if video_to_read %}
+        <img
+          width="600"
+          height="400"
+          id="video_frame"
+          src="{{ url_for('video_feed') }}"
+        />
+        {% endif %}
+      </div>
+    </div>
     <ul>
       {% for video, video_path, thumbnail in videos %}
       <li>
-        <h2>{{ video }}</h2>
-        <video width="320" height="240" controls>
-          <source src="{{ video_path }}" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-        <img src="{{ thumbnail }}" alt="Thumbnail" />
+        <div class="card">
+          <img
+            onclick="readVideo('{{ thumbnail }}')"
+            src="{{ thumbnail }}"
+            alt="Thumbnail"
+          />
+          <p id="vid_title">{{video}}</p>
+        </div>
       </li>
       {% endfor %}
     </ul>
+
+    <script>
+      function readVideo(params) {
+        params = "/video_listing?src=" + params.split("/")[3].split(".")[0];
+        window.location.href = "http://localhost:5000" + params;
+      }
+    </script>
   </body>
 </html>
