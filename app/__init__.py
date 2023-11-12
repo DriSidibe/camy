@@ -10,10 +10,15 @@ start_time = 7
 end_time = 19
 launch_now = True
 video_dir = "/home/drissa/Bureau/video_surveillance/"
-tmp_dir = "/tmp/"
+tmp_dir = "C:\Users\drissa sidibe\OneDrive\Bureau\stuffs\projects\camy\\app\static\\videos\\"
 video_ext = ".avi"
 camera = cv2.VideoCapture(0)
-
+recording = True
+frame_width = int(camera.get(3))
+frame_height = int(camera.get(4))
+size = (frame_width, frame_height)
+result = None
+video_res = (160, 100)
 
 def make_1080p(camera):
     camera.set(3, 1920)
@@ -38,9 +43,9 @@ def resize_image(src, scale=0.5):
     return cv2.resize(src, (int(src.shape[0]*scale), int(src.shape[1]*scale)))
 
 
-video_res = (160, 100)
+#change_res(camera, *video_res)
 
-
+"""
 def capture():
     global launch_now, camera
     try:
@@ -132,13 +137,7 @@ def capture():
         # Closes all the frames
         cv2.destroyAllWindows()
 
-        time.sleep(3)
-        print("compressing the video ...")
-        subprocess.run(["ffmpeg", "-i", tmp_dir+filename+video_ext, "-s", "160x120", "-vcodec", "msmpeg4v2", video_dir+filename+video_ext])
-        subprocess.run(["rm", tmp_dir+filename+".avi"])
-
-        print(f"The video {filename} was successfully saved")
+        
     except:
         exit()
-
-
+"""

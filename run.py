@@ -1,29 +1,11 @@
 from flask import Response, render_template,make_response, redirect, url_for, request
 import cv2
-from app import app, camera, resize_image
+from app import *
 from datetime import datetime
+import os
 
-recording = True
-start_time = 7
-end_time = 19
-launch_now = True
-video_dir = "/home/drissa/Bureau/video_surveillance/"
-tmp_dir = ""
-video_ext = ".avi"
-
-# We need to set resolutions.
-# so, convert them from float to integer.
-frame_width = None
-frame_height = None
-
-size = None
-
-# Below VideoWriter object will create
-# a frame of above defined The output
-# is stored in 'filename.avi' file.
-filename = None
-result = None
-
+saved = False
+static_folder = "app/static/"
 
 # Fonction pour capturer la vidéo en temps réel
 def generate_frames():
@@ -41,15 +23,36 @@ def generate_frames():
             
             # Write the frame into the
             # file 'filename.avi'
-            result.write(resize_image(frame))
+            result.write(frame)
+            ret, buffer = cv2.imencode('.jpg', frame)
             if not recording:
                 result.release()
-            ret, buffer = cv2.imencode('.jpg', frame)
             if ret:
                 frame = buffer.tobytes()
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
                 
+def initVideoContainer():
+    global filename, result
+    filename = "_".join(
+                "_".join(
+                    "_".join("_".join(str(datetime.now()).split(" ")).split(":")).split("-")
+                ).split(".")
+            )
+    result = cv2.VideoWriter(
+                f"{tmp_dir}{filename}.avi", cv2.VideoWriter_fourcc(*"MJPG"), 15, size
+            )
+    
+def getVideoThumbnail(filename):
+    global tmp_dir
+    cap = cv2.VideoCapture(f"{tmp_dir}{filename}.avi")
+    ret, frame = cap.read()
+    if ret:
+        cv2.imwrite(f"app/{static_folder}'thumbnails/'{filename}.png", frame)
+    else:
+        print("Error: can't create thumbnail")
+    cap.release()
+
 
 # Page de connexion
 @app.route('/login')
@@ -67,19 +70,14 @@ def logout():
 
 @app.route('/video')
 def video():
-    global recording, frame_height, frame_width, size, filename, result, camera
+    global recording, filename, result, camera
     if recording:
-        frame_width = int(camera.get(3))
-        frame_height = int(camera.get(4))
-        size = (frame_width, frame_height)
-        filename = "_".join("_".join("_".join("_".join(str(datetime.now()).split(" ")).split(":")).split("-")).split("."))
-        result = cv2.VideoWriter(f"{tmp_dir}{filename}.avi", cv2.VideoWriter_fourcc(*"MJPG"), 15, size)
         return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     return redirect(url_for('stop_recording'))
 
 @app.route('/stop_recording', methods=['GET'])
 def stop_recording():
-    global recording
+    global recording, result
     if request.cookies.get('utilisateur_camera') != "drissa":
         return redirect(url_for('login'))
     recording = False
@@ -93,9 +91,31 @@ def pre_stop_recording():
     camera = cv2.VideoCapture(0)
     return redirect(url_for('home'))
 
+@app.route('/save_recording', methods=['GET'])
+def save_recording():
+    global recording, filename, result
+    result.release()
+    getVideoThumbnail(filename)
+    return render_template("saved.html", filename=filename)
+
+@app.route('/video_listing', methods=['GET'])
+def video_listing():
+    video_folder = f'{video_folder}/videos'
+    for video in os.listdir(video_folder):
+        if video.endswith(('.avi')):
+            getVideoThumbnail(os.path.splitext(video)[0])
+    videos = [video for video in os.listdir(video_folder) if video.endswith(('.avi'))]
+    video_paths = [f'{video_folder}/{video}' for video in videos]
+
+    # Vous pouvez utiliser des miniatures des vidéos à l'aide de bibliothèques comme ffmpeg-thumbnailer
+    # Assurez-vous d'installer ffmpeg-thumbnailer en utilisant la commande : sudo apt-get install ffmpeg-thumbnailer
+    thumbnails = [f'{video_folder}/thumbnails/{os.path.splitext(video)[0]}.png' for video in videos]
+
+    return render_template('video_listing.html', videos=zip(videos, video_paths, thumbnails))
+
 @app.route('/', methods=['POST', 'GET'])
 def home():
-    global recording, camera
+    global recording, camera, result
     utilisateur = request.cookies.get('utilisateur_camera')
     if request.method == 'POST':
         if request.form.get('username') == "drissa" and request.form.get('password') == "ancien123":
@@ -103,11 +123,13 @@ def home():
                 resp = make_response(render_template('stopped.html', utilisateur=request.form.get('username')))
                 resp.set_cookie('utilisateur_camera', request.form.get('username'), max_age=2592000)
                 return resp
+            initVideoContainer()
             resp = make_response(render_template('video.html', utilisateur=request.form.get('username')))
             resp.set_cookie('utilisateur_camera', request.form.get('username'), max_age=2592000)
             return resp
         else:
             return redirect(url_for('home'))
+    initVideoContainer()
     if not recording:
         camera = cv2.VideoCapture(0)
     if request.args.get("user") == "computer":

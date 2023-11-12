@@ -1,60 +1,104 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Video surveillance magasin</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <a href="{{ url_for('logout') }}"><button>se deconnecter</button></a>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <div id="head">
+      <a href="{{ url_for('logout') }}"><button>se deconnecter</button></a>
+      <a href="{{ url_for('video_listing') }}"
+        ><button>Voir les videos</button></a
+      >
+    </div>
     <h1>Mon Flux Vidéo Personnalisé</h1>
-    <img src="{{ url_for('video') }}" alt="Flux Vidéo 1">
+    <img src="{{ url_for('video') }}" alt="Flux Vidéo 1" />
     {% if utilisateur == "drissa" %}
-        <a onclick="showStopRecordingBox()"><button>Arrêter l'enregistrement</button></a>
+    <a onclick="showStopRecordingBox()"
+      ><button>Arrêter l'enregistrement</button></a
+    >
+    <a onclick="showSaveRecordingBox()"
+      ><button>Sauvegarder l'enregistrement</button></a
+    >
     {% endif %}
     <p>Ceci est une page personnalisée avec un flux vidéo.</p>
     <div id="stop-prompt-sure-box-cnt">
-        <div id="stop-prompt-sure-box">
-            <p>Êtes-vous sûr de vouloir arrêter l'enregistrement ?</p>
-            <a href="{{ url_for('stop_recording') }}"><button>Oui</button></a>
-            <a onclick="closeStopRecording()"><button>Non</button></a>
-        </div>
+      <div id="stop-prompt-sure-box">
+        <p>Êtes-vous sûr de vouloir arrêter l'enregistrement ?</p>
+        <a href="{{ url_for('stop_recording') }}"><button>Oui</button></a>
+        <a onclick="closeStopRecording()"><button>Non</button></a>
+      </div>
+    </div>
+    <div id="save-prompt-sure-box-cnt">
+      <div id="save-prompt-sure-box">
+        <p>Êtes-vous sûr de vouloir sauvegarder l'enregistrement ?</p>
+        <a href="{{ url_for('save_recording') }}"><button>Oui</button></a>
+        <a onclick="closeSaveRecording()"><button>Non</button></a>
+      </div>
     </div>
 
     <script type="text/javascript">
-        function closeStopRecording() {
-            document.getElementById("stop-prompt-sure-box-cnt").style.display = "none";
-        }
+      function closeStopRecording() {
+        document.getElementById("stop-prompt-sure-box-cnt").style.display =
+          "none";
+      }
 
-        function showStopRecordingBox() {
-            document.getElementById("stop-prompt-sure-box-cnt").style.display = "block";
-        }
+      function showStopRecordingBox() {
+        document.getElementById("stop-prompt-sure-box-cnt").style.display =
+          "block";
+      }
+
+      function closeSaveRecording() {
+        document.getElementById("save-prompt-sure-box-cnt").style.display =
+          "none";
+      }
+
+      function showSaveRecordingBox() {
+        document.getElementById("save-prompt-sure-box-cnt").style.display =
+          "block";
+      }
     </script>
 
     <style>
-        #stop-prompt-sure-box-cnt {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 100%;
-            height: 100%;
-            display: none;
-            text-align: center;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding-top: 200px;
-            z-index: 10;
-        }
+      #stop-prompt-sure-box-cnt,
+      #save-prompt-sure-box-cnt {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        display: none;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding-top: 200px;
+        z-index: 10;
+      }
 
-        #stop-prompt-sure-box {
-            width: 300px;
-            height: 200px;
-            background-color: white;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin: auto;
-        }
+      #stop-prompt-sure-box,
+      #save-prompt-sure-box {
+        width: 300px;
+        height: 200px;
+        background-color: white;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        margin: auto;
+      }
+
+      #head {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+      }
     </style>
-</body>
+  </body>
 </html>
